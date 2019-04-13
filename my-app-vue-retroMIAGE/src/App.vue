@@ -7,7 +7,7 @@
         </router-link>
         <v-toolbar-title >RetroMiage WebConsole</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-toolbar-items class="hidden-sm-and-down">
+        <v-toolbar-items class="hidden-sm-and-down" >
           <router-link to="/ajoutRom">
             <v-btn flat>Installation de ROM</v-btn>
           </router-link>
@@ -48,5 +48,9 @@
     align-items: center;
     color: #2c3e50;
 
+  }
+
+  .hidden-sm-and-down{
+    padding-top: 20px;
   }
 </style>
