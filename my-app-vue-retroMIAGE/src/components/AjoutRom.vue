@@ -3,7 +3,7 @@
 
         <label class="file-select">
             <div class="select-button">
-                <span v-if="value">Selected File: {{value.name}}</span>
+                <span v-if="false">Selected File: </span>
                 <span v-else>AJOUTER ROM</span>
             </div>
             <input type="file"/>
@@ -11,7 +11,7 @@
 
 
         <v-card-text>
-            <p class="text-md-center">A définir plus tard...</p>
+            <p class="text-md-center">A définir plus tard...{{msg}}</p>
         </v-card-text>
 
     </div>
@@ -20,7 +20,6 @@
 
 
 <script>
-
     export default {
         name: "AjoutRom"
     }
