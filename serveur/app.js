@@ -3,8 +3,12 @@ const serveIndex = require('serve-index');
 const formidable = require('formidable');
 const fs = require('fs');
 const spawn = require('child_process').spawn;
+const bodyParser = require('body-parser');
 const app = express();
 const PORT = 3000;
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.use('/file', express.static('../'), serveIndex('../', {'icons': true}));
 
@@ -34,6 +38,19 @@ app.get('/lancerCommandeLs', function(req, res) {
     ls.on('exit', function (code) {
       console.log('child process exited with code ' + code.toString());
     });
+});
+
+/**
+ Pour supprimer un jeu, il faut utiliser le méthode DELETE avec un body au format suivant:
+ {"console": "nes", "jeu": "jeu1"} pour pouvoir récupérer aussi bien le type de console que
+ le nom du jeu (fichier zip) lui même
+*/
+app.delete('/supprimerFichier', function(req, res){
+  let cheminSuppressionFichier = '/home/pi/RetroPie/roms/'+req.body.console+ '/' + req.body.jeu + '.zip';
+  fs.unlink(cheminSuppressionFichier, function (err) {
+    if (err) throw err;
+    res.send('Fichier supprimé!!');
+  });
 });
 
 app.post('/', function (req, res){
