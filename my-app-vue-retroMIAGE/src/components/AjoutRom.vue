@@ -11,7 +11,7 @@
 
 
         <v-card-text>
-            <p class="text-md-center">A définir plus tard...{{msg}}</p>
+            <p class="text-md-center">A définir plus tard...</p>
         </v-card-text>
 
     </div>
