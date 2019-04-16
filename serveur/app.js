@@ -4,8 +4,12 @@ const formidable = require('formidable');
 const fs = require('fs');
 const spawn = require('child_process').spawn;
 const bodyParser = require('body-parser');
+const path = require('path');
 const app = express();
 const PORT = 3000;
+
+const cheminDeBase = '/home/pi/RetroPie/roms/';
+// var cheminDeBase = '/Users/fatoudiop/Desktop/miage2018-2019/projetRaspberry/projet-raspberry/';
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -16,9 +20,38 @@ app.get('/upload', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/listeDeRoms', function(req, res) {
-    let files = fs.readdirSync('/home/pi/RetroPie/roms/');
-    res.send(files);
+app.get('/listeConsoles', function(req, res) {
+    let consoles = fs.readdirSync(cheminDeBase);
+    res.send(consoles);
+});
+
+// Permet de récupérer la liste de tous les jeux en fonction de leur type de console
+// La réponse renvoyée est au format suivant:
+// [{'console': 'amiga', 'jeux': ['jeu_1','jeu_2','jeu_N']}, {'console': 'nes', 'jeux': ['jeu_1','jeu_2','jeu_N']}]
+app.get('/listeJeux', function(req, res){
+  // Déclaration du tableau qui sera rempli et renvoyé
+  let listeJeux = [];
+  // Explorer le contenu du chemin pour récupérer la liste des consoles de jeux
+  fs.readdir(cheminDeBase, function(err, consoles) {
+    if (err) throw err;
+    // Parcourir la liste des consoles pour récupérer la liste des jeux
+    consoles.forEach(function(consoleIndividuelle, index){
+      // Reconstruire le chemin d'accès au type de console en cours de traitement
+      cheminConsole = path.resolve(cheminDeBase, consoleIndividuelle);
+
+      fs.stat(cheminConsole, function(err, stat){
+        // Si le répertoire est un dossier (console), on récupère le contenu (liste de jeux) 
+        if(stat && stat.isDirectory()) {
+          let jeux = fs.readdirSync(cheminConsole);
+          listeJeux.push({'console': consoleIndividuelle, 'jeux': jeux})
+        }
+        if(index >= consoles.length-1){
+          // console.log('---> Jeux: ', listeJeux);
+          res.send(listeJeux);
+        }
+      });
+    });
+  });
 });
 
 // Permet de lancer la commande ls
@@ -51,22 +84,6 @@ app.delete('/supprimerFichier', function(req, res){
     if (err) throw err;
     res.send('Fichier supprimé!!');
   });
-});
-
-app.post('/', function (req, res){
-    var form = new formidable.IncomingForm();
-    form.parse(req);
-
-    form.on('fileBegin', function (name, file){
-       // file.path = '/home/pi/RetroPie/roms/nes/' + file.name;
-      file.path = '/home/pi/projetNodeJS/uploads/' + file.name;
-    });
-
-    form.on('file', function (name, file){
-        console.log('Nom du fichier chargé: ' + file.name);
-    });
-
-    res.sendFile(__dirname + '/index.html');
 });
 
 app.listen(PORT, function() {
