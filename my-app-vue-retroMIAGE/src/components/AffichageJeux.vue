@@ -81,6 +81,18 @@
                 listejeux: liste.data().listejeux
             }
         },
+        // Comme dans les restaurants, méthode mounted
+        mounted() {
+            let url = "http://localhost:3000/listeJeuxSimulee"; // ici la route du serveur !!!!
+            console.log("MOUNTED") // I'm text inside the component.
+            // On récupère la liste des jeux sur le serveur
+            fetch(url)
+                .then((responseJson) => {
+                    return responseJson.json()
+                }).then((data) => {
+                    this.data.listejeux = data;
+                })
+        },
 
         methods: {
             deleteJEU: function (jeu) {

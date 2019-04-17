@@ -11,16 +11,25 @@ const PORT = 3000;
 const cheminDeBase = '/home/pi/RetroPie/roms/';
 // var cheminDeBase = '/Users/fatoudiop/Desktop/miage2018-2019/projetRaspberry/projet-raspberry/';
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 app.use('/file', express.static('../'), serveIndex('../', {'icons': true}));
 
-app.get('/upload', function(req, res) {
+// SUPPORT CROSS ORIGIN
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE ");
+
+    next();
+});
+
+app.get('/upload', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/listeConsoles', function(req, res) {
+app.get('/listeConsoles', function (req, res) {
     let consoles = fs.readdirSync(cheminDeBase);
     res.send(consoles);
 });
@@ -28,48 +37,104 @@ app.get('/listeConsoles', function(req, res) {
 // Permet de récupérer la liste de tous les jeux en fonction de leur type de console
 // La réponse renvoyée est au format suivant:
 // [{'console': 'amiga', 'jeux': ['jeu_1','jeu_2','jeu_N']}, {'console': 'nes', 'jeux': ['jeu_1','jeu_2','jeu_N']}]
-app.get('/listeJeux', function(req, res){
-  // Déclaration du tableau qui sera rempli et renvoyé
-  let listeJeux = [];
-  // Explorer le contenu du chemin pour récupérer la liste des consoles de jeux
-  fs.readdir(cheminDeBase, function(err, consoles) {
-    if (err) throw err;
-    // Parcourir la liste des consoles pour récupérer la liste des jeux
-    consoles.forEach(function(consoleIndividuelle, index){
-      // Reconstruire le chemin d'accès au type de console en cours de traitement
-      cheminConsole = path.resolve(cheminDeBase, consoleIndividuelle);
+app.get('/listeJeux', function (req, res) {
+    // Déclaration du tableau qui sera rempli et renvoyé
+    let listeJeux = [];
+    // Explorer le contenu du chemin pour récupérer la liste des consoles de jeux
+    fs.readdir(cheminDeBase, function (err, consoles) {
+        if (err) throw err;
+        // Parcourir la liste des consoles pour récupérer la liste des jeux
+        consoles.forEach(function (consoleIndividuelle, index) {
+            // Reconstruire le chemin d'accès au type de console en cours de traitement
+            cheminConsole = path.resolve(cheminDeBase, consoleIndividuelle);
 
-      fs.stat(cheminConsole, function(err, stat){
-        // Si le répertoire est un dossier (console), on récupère le contenu (liste de jeux) 
-        if(stat && stat.isDirectory()) {
-          let jeux = fs.readdirSync(cheminConsole);
-          listeJeux.push({'console': consoleIndividuelle, 'jeux': jeux})
-        }
-        if(index >= consoles.length-1){
-          // console.log('---> Jeux: ', listeJeux);
-          res.send(listeJeux);
-        }
-      });
+            fs.stat(cheminConsole, function (err, stat) {
+                // Si le répertoire est un dossier (console), on récupère le contenu (liste de jeux)
+                if (stat && stat.isDirectory()) {
+                    let jeux = fs.readdirSync(cheminConsole);
+                    listeJeux.push({'console': consoleIndividuelle, 'jeux': jeux})
+                }
+                if (index >= consoles.length - 1) {
+                    // console.log('---> Jeux: ', listeJeux);
+                    res.send(listeJeux);
+                }
+            });
+        });
     });
-  });
+});
+
+app.get('/listeJeuxSimulee', function (req, res) {
+    let listeJeux = {
+        headers: [
+            {
+                text: 'Nom du jeux',
+                align: 'center',
+                value: 'name'
+            },
+            {text: 'Console', value: 'console'},
+            {
+                text: "Image du jeu",
+                align: 'center',
+                value: 'image',
+                sortable: false
+            },
+            {
+                text: 'Actions',
+                align: 'center',
+                sortable: false
+            }
+        ],
+        listejeux: [{
+            name: 'Super Mario Bros',
+            console: 'NES',
+            image: "https://cdn11.bigcommerce.com/s-ymgqt/images/stencil/original/products/24509/22815/Super_Mario_Bros._box__09338.1397838384.jpg?c=2&imbypass=on",
+            description: "Super Mario Bros. sur Nes est un jeu de plates-formes mettant en scène le désormais célèbre plombier à moustache et salopette rouge. Traversez de nombreux niveaux, sautez sur vos ennemis pour les éliminer, ramassez des champignons pour grandir et des fleurs pour cracher du feu. Affrontez le méchant Bowser et ses sbires afin de délivrer la délicieuse princesse Peach."
+        },
+            {
+                name: 'Mario Kart Wii',
+                console: 'Wii',
+                image: "",
+                description: "Mario Kart Wii est le sixième volet de la fameuse série de Nintendo. Les courses de karting prennent ici des allures de folie avec pas moins de 12 participants en lice. Parmi les nouveautés, cet épisode ajoute la possibilité de jouer en ligne via la Wi-Fi Connection et de piloter des motos en plus des karts habituels. De nouvelles options font aussi leur apparition et le soft est vendu avec un volant, le Wii Wheel, qui renouvelle habilement les sensations de jeu."
+            },
+            {
+                name: 'Nintendogs',
+                console: 'Nintendo DS',
+                image: "",
+                description: "Avec un choix initial d'adoption parmi 6 races et 14 à débloquer, Nintendogs : Labrador & ses Amis sur DS vous propose de vous occuper d'un petit chiot. Vous devrez passer du temps avec votre ami, le dresser, le nourrir, jouer avec-lui et ensuite le présenter à des concours pour lui faire gagner plein d'objets."
+            },
+            {
+                name: 'Terranigma',
+                console: 'Super Nintendo',
+                image: "https://www.nautiljon.com/images/jeuxvideo/00/60/terranigma_1506.jpg",
+                description: "Terranigma est un jeu de rôle orienté action sur Super Nintendo. Vous incarnez Ark, un jeune homme qui, incapable de résister à sa curiosité, ouvre une boîte interdite qui transforme tous les habitants du village en pierre. Il devra partir à l'aventure à la recherche des Cinq Tours pour trouver une solution à ce terrible problème."
+            },
+            {
+                name: 'Metroid Prime Hunters',
+                console: 'Nintendo DS',
+                image: "",
+                description: "Metroid Prime : Hunters sur DS est un jeu d'action/aventure dans lequel vous retrouvez la chasseuse de primes Samus Aran, engoncée dans son armure et à la recherche de reliques laissées par une race guerrière aujourd'hui disparue. Tous vos concurrents accourent par-delà les galaxies pour les trouver, à vous d'être plus rapide et efficace. Un mode multi permet d'affronter ses amis et ses rivaux grâce à la communication sans fil."
+            }
+        ]
+    }
+    res.send(JSON.stringify(listeJeux));
 });
 
 // Permet de lancer la commande ls
 // lancer dans l'url du navigateur: http://IP_Server:3000/lancerCommandeLs
 // '/Users/' peut être modifié par le chemin du répertoire dont on veut lister le contenu
-app.get('/lancerCommandeLs', function(req, res) {
-    ls    = spawn('ls', ['', '/Users/']);
+app.get('/lancerCommandeLs', function (req, res) {
+    ls = spawn('ls', ['', '/Users/']);
     ls.stdout.on('data', function (data) {
-      console.log('stdout: ' + (data.toString()).split(' '));
-      res.send(data.toString());
+        console.log('stdout: ' + (data.toString()).split(' '));
+        res.send(data.toString());
     });
 
     ls.stderr.on('data', function (data) {
-      console.log('stderr: ' + data.toString());
+        console.log('stderr: ' + data.toString());
     });
 
     ls.on('exit', function (code) {
-      console.log('child process exited with code ' + code.toString());
+        console.log('child process exited with code ' + code.toString());
     });
 });
 
@@ -77,15 +142,15 @@ app.get('/lancerCommandeLs', function(req, res) {
  Pour supprimer un jeu, il faut utiliser le méthode DELETE avec un body au format suivant:
  {"console": "nes", "jeu": "jeu1"} pour pouvoir récupérer aussi bien le type de console que
  le nom du jeu (fichier zip) lui même
-*/
-app.delete('/supprimerFichier', function(req, res){
-  let cheminSuppressionFichier = '/home/pi/RetroPie/roms/'+req.body.console+ '/' + req.body.jeu + '.zip';
-  fs.unlink(cheminSuppressionFichier, function (err) {
-    if (err) throw err;
-    res.send('Fichier supprimé!!');
-  });
+ */
+app.delete('/supprimerFichier', function (req, res) {
+    let cheminSuppressionFichier = '/home/pi/RetroPie/roms/' + req.body.console + '/' + req.body.jeu + '.zip';
+    fs.unlink(cheminSuppressionFichier, function (err) {
+        if (err) throw err;
+        res.send('Fichier supprimé!!');
+    });
 });
 
-app.listen(PORT, function() {
+app.listen(PORT, function () {
     console.log('Le serveur Node écoute sur le port: ', PORT);
 });
