@@ -58,6 +58,7 @@ app.get('/listeJeux', function(req, res){
         res.send(listeJeux);
       }
     });
+  });
 });
 
 app.get('/listeJeuxSimulee', function (req, res) {
