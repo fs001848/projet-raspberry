@@ -36,20 +36,18 @@ app.get('/listeJeux', function(req, res){
     if (err) throw err;
     // Parcourir la liste des consoles pour récupérer la liste des jeux
     consoles.forEach(function(consoleIndividuelle, index){
+      console.log('---> consoleIndividuelle: ', consoleIndividuelle);
       // Reconstruire le chemin d'accès au type de console en cours de traitement
       cheminConsole = path.resolve(cheminDeBase, consoleIndividuelle);
-
-      fs.stat(cheminConsole, function(err, stat){
-        // Si le répertoire est un dossier (console), on récupère le contenu (liste de jeux) 
-        if(stat && stat.isDirectory()) {
-          let jeux = fs.readdirSync(cheminConsole);
-          listeJeux.push({'console': consoleIndividuelle, 'jeux': jeux})
-        }
-        if(index >= consoles.length-1){
-          // console.log('---> Jeux: ', listeJeux);
-          res.send(listeJeux);
-        }
-      });
+      
+      if(fs.lstatSync(cheminConsole).isDirectory()){
+        console.log('*****> cheminConsole: ', cheminConsole);
+        let jeux = fs.readdirSync(cheminConsole);
+        listeJeux.push({'console': consoleIndividuelle, 'jeux': jeux})
+      }
+      if(index >= consoles.length-1){
+        res.send(listeJeux);
+      }
     });
   });
 });
@@ -79,11 +77,32 @@ app.get('/lancerCommandeLs', function(req, res) {
  le nom du jeu (fichier zip) lui même
 */
 app.delete('/supprimerFichier', function(req, res){
-  let cheminSuppressionFichier = '/home/pi/RetroPie/roms/'+req.body.console+ '/' + req.body.jeu + '.zip';
+  let cheminSuppressionFichier = '/home/pi/RetroPie/roms/'+req.body.console+ '/' + req.body.jeu; //+ '.zip';
   fs.unlink(cheminSuppressionFichier, function (err) {
     if (err) throw err;
     res.send('Fichier supprimé!!');
   });
+});
+
+
+/**
+Ajout d'un fichier dans le serveur
+*/
+app.post('/', function (req, res){
+    var form = new formidable.IncomingForm();
+    form.parse(req);
+
+    form.on('fileBegin', function (name, file){
+      console.log('----> file: ', file);
+       // file.path = '/home/pi/RetroPie/roms/nes/' + file.name;
+      file.path = cheminDeBase + file.name;
+    });
+
+    form.on('file', function (name, file){
+        console.log('Nom du fichier chargé: ' + file.name);
+    });
+
+    res.sendFile(__dirname + '/index.html');
 });
 
 app.listen(PORT, function() {
