@@ -15,7 +15,9 @@
           <router-link to="/affichageJeux">
             <v-btn flat>Liste des jeux</v-btn>
           </router-link>
-
+                    <router-link to="/aide">
+            <v-btn flat>Manuel d'utilisation</v-btn>
+          </router-link>
         </v-toolbar-items>
       </v-toolbar>
     </template>

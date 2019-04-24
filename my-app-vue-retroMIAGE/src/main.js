@@ -5,6 +5,7 @@ import VueRouter from 'vue-router';
 import AffichageJeux from './components/AffichageJeux';
 import AjoutRom from './components/AjoutRom';
 import Accueil from './components/Accueil';
+import Aide from './components/Aide';
 
 Vue.use(VueRouter);
 
@@ -15,6 +16,7 @@ Vue.use(Vuetify, {
 const routes = [
     {path:'/affichageJeux', component: AffichageJeux},
     {path:'/ajoutRom', component: AjoutRom},
+    {path:'/aide', component: Aide},
     {path:'/', component: Accueil}
 ];
 
