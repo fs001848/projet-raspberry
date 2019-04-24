@@ -61,6 +61,7 @@
 
 <script>
     import liste from '../helpers/ListeJeux'
+    import makelist from '../helpers/MakeList'
     export default {
         name: "ListeJeux",
 
@@ -83,14 +84,17 @@
         },
         // Comme dans les restaurants, méthode mounted
         mounted() {
-            let url = "http://localhost:3000/listeJeuxSimulee"; // ici la route du serveur !
+            let url = "http://localhost:3000/listeJeux"; // ici la route du serveur !
             // On récupère la liste des jeux sur le serveur
             fetch(url)
                 .then((responseJson) => {
                     return responseJson.json()
                 }).then((data) => {
-                    this.listejeux = data.listejeux;
-                    this.headers = data.headers;
+                    var gamelist = makelist(data);
+                    this.headers = gamelist.headers;
+                    this.listejeux = gamelist.listejeux;
+                   // this.listejeux = data.listejeux;
+                    //this.headers = data.headers;
                 })
         },
 
