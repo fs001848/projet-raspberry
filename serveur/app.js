@@ -8,7 +8,9 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
-const cheminDeBase = '/home/pi/RetroPie/roms/';
+//const cheminDeBase = '/home/pi/RetroPie/roms/';
+var cheminDeBase = '/home/sylvain/Documents/cours/M1/projet_S2/chemin_simulation';
+//var cheminDeBase = '/media/sylvain/retropie/home/pi/RetroPie/roms';
 // var cheminDeBase = '/Users/fatoudiop/Desktop/miage2018-2019/projetRaspberry/projet-raspberry/';
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -142,10 +144,10 @@ app.get('/lancerCommandeLs', function (req, res) {
  le nom du jeu (fichier zip) lui même
 */
 app.delete('/supprimerFichier', function(req, res){
-  let cheminSuppressionFichier = '/home/pi/RetroPie/roms/'+req.body.console+ '/' + req.body.jeu; //+ '.zip';
+  let cheminSuppressionFichier = cheminDeBase+"/"+req.body.console+ '/' + req.body.jeu; //+ '.zip';
   fs.unlink(cheminSuppressionFichier, function (err) {
     if (err) throw err;
-    res.send('Fichier supprimé!!');
+    res.send('Fichier supprimé !');
   });
 });
 

@@ -105,7 +105,7 @@
                     fetch("http://localhost:3000/supprimerFichier", {
                         method: 'DELETE',
                         headers: { 'Content-Type': 'application/json'},
-                        body: JSON.stringify({console: 'atari', jeu: 'jeuAtari1'})
+                        body: JSON.stringify({console: jeu.console, jeu: jeu.name})
                     })
                         .then(res => res.text()) // OR res.json()
                         .then(res => console.log(res))
