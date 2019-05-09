@@ -1,4 +1,5 @@
 const express = require('express');
+var multer = require("multer");
 const serveIndex = require('serve-index');
 const formidable = require('formidable');
 const fs = require('fs');
@@ -8,13 +9,23 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
-const cheminDeBase = '/home/pi/RetroPie/roms/';
-// var cheminDeBase = '/Users/fatoudiop/Desktop/miage2018-2019/projetRaspberry/projet-raspberry/';
+// Dossier de stockage des fichiers dans le serveur
+var storage = multer.diskStorage({
+    destination: "./uploads",
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
 
+var upload = multer({
+  storage: storage
+});
+
+const cheminDeBase = '/home/pi/RetroPie/roms/';
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-app.use('/file', express.static('../'), serveIndex('../', {'icons': true}));
+app.use(express.static('~/projet-raspberry/serveur'));
 
 // SUPPORT CROSS ORIGIN
 app.use(function (req, res, next) {
@@ -25,9 +36,26 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.get('/upload', function (req, res) {
+app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
+
+// 
+app.post('/uploadFile', upload.array('file'), function (req, res) {
+
+    console.log("received " + req.files.length + " files"); // form files
+    for (var i = 0; i < req.files.length; i++) {
+        console.log("### " + String(req.files[i].path));
+        var oldPath = '' + req.files[i].path;
+        var newPath = path.resolve(cheminDeBase + req.body.console, (req.files[i].path).split('/')[1]);
+        fs.rename(oldPath, newPath, function (err) {
+            if (err) throw err
+        });
+    }
+    console.log('Fichiers placés dans le bon dossier!')
+    res.send(JSON.stringify(200));
+});
+
 
 app.get('/listeConsoles', function (req, res) {
     let consoles = fs.readdirSync(cheminDeBase);
@@ -149,26 +177,9 @@ app.delete('/supprimerFichier', function(req, res){
   });
 });
 
+function placerFichierDansLeBonDossier(fichier, dossier) {
 
-/**
-Ajout d'un fichier dans le serveur
-*/
-app.post('/', function (req, res){
-    var form = new formidable.IncomingForm();
-    form.parse(req);
-
-    form.on('fileBegin', function (name, file){
-      console.log('----> file: ', file);
-       // file.path = '/home/pi/RetroPie/roms/nes/' + file.name;
-      file.path = cheminDeBase + file.name;
-    });
-
-    form.on('file', function (name, file){
-        console.log('Nom du fichier chargé: ' + file.name);
-    });
-
-    res.sendFile(__dirname + '/index.html');
-});
+}
 
 app.listen(PORT, function () {
     console.log('Le serveur Node écoute sur le port: ', PORT);
