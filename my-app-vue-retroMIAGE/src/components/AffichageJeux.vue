@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div class="liste">
 
         <v-dialog v-model="dialog" max-width="3000px"> //la boite de dialogue pour modifier le jeu
@@ -62,6 +62,7 @@
 <script>
     import liste from '../helpers/ListeJeux'
     import makelist from '../helpers/MakeList'
+
     export default {
         name: "ListeJeux",
 
@@ -84,7 +85,7 @@
         },
         // Comme dans les restaurants, méthode mounted
         mounted() {
-            let url = "http://localhost:3000/listeJeux"; // ici la route du serveur !
+            let url = "http://localhost:3000/listeJeux"; //"http://192.168.1.44:3000/listeJeux"; // ici la route du serveur !
             // On récupère la liste des jeux sur le serveur
             fetch(url)
                 .then((responseJson) => {
@@ -101,6 +102,15 @@
         methods: {
             deleteJEU: function (jeu) {
                 if( confirm("Etes-vous sûr de vouloir supprimer ce jeu?")){
+                    fetch("http://localhost:3000/supprimerFichier", {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json'},
+                        body: JSON.stringify({console: 'atari', jeu: 'jeuAtari1'})
+                    })
+                        .then(res => res.text()) // OR res.json()
+                        .then(res => console.log(res))
+
+                    console.log(jeu.name + " supprimé");
                     this.listejeux.splice(this.listejeux.indexOf(jeu),1);
                 }
 
