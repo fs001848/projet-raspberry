@@ -9,7 +9,7 @@
 
     <script>
 	$(document).ready(function(){
-   		 const url = 'http://192.168.43.143:3000/listeDeRoms';
+   		 const url = 'http://192.168.1.50:3000/listeConsoles';
    		 $.ajax({
         		url: url,
         		type: 'GET',
@@ -30,13 +30,62 @@
     </script>
   </div>
 
-  <form action="/" enctype="multipart/form-data" method="post">
-    <select name="selection" id="selection">
-        <option selected="yes">Sélection du dossier </option>
-    </select>
-    <input type="file" name="upload" multiple>
-    <input type="submit" value="Upload">
+  <form onsubmit="envoieFormEtFichiers(event);">
+    <!-- <label>Nom:<input type="text" name="nom"></label>
+    <br> -->
+    <label>Type console:<input type="text" name="console"></label>
+    <br>
+    <label>Sélectionnez un ou plusieurs fichiers images :
+        <input id="file" type="file" multiple />
+    </label>
+    <br>
+    <button>Envoyer</button>
   </form>
 
+  <script>
+    function envoieFormEtFichiers(event) {
+        // éviter que la page se réaffiche et que le formulaire
+        // soit posté par défaut par le browser
+        event.preventDefault();
+
+        // on récupère le formulaire, comme c'est lui qui a
+        // généré l'event submit, on le récupère dans event.target
+        let form = event.target;
+
+        // données du formulaire, ici on récupère tous les champs
+        // mais pas les fichiers
+        var data = new FormData(form);
+
+        // on ajoute les fichiers au formData
+        // il est important qu'ils aient tous la même
+        // clé "file" quand on fait data.append
+        var fileInput = document.querySelector('#file');
+
+            for (var i = 0; i < fileInput.files.length; i++)
+                data.append('file', fileInput.files[i]);
+
+        // on envoie le formulaire par POST
+        fetch('uploadFile', {
+                method: 'POST',
+                body: data
+            })
+            .then((responseJSON) => {
+                responseJSON.json()
+                    .then((resJS) => {
+                        // Maintenant resJS est un vrai objet JavaScript
+                        console.log("réponse : " + resJS.msg);
+
+                        // on remet les champs du form à vide et on affiche
+                        // les images uploadées...
+                        form.reset()
+                        //showUploadedImages();
+                    });
+            })
+            .catch(function (err) {
+                console.log(err);
+            });
+
+    }
+  </script>
 </body>
 </html>
