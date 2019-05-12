@@ -181,9 +181,35 @@ app.delete('/supprimerFichier', function(req, res){
   });
 });
 
-function placerFichierDansLeBonDossier(fichier, dossier) {
+/**
+ Pour modifier le nom d'un jeu, il faut utiliser le méthode PUT avec un body au format suivant:
+ {"console": "nes", "ancienNom": "jeu1", "nouveauNom": "jeu2"} pour pouvoir récupérer aussi bien le type de console que
+ le nom du jeu (fichier zip) lui même
+*/
+app.put('/modifierNomJeu', function(req, res) {
+    let cheminAncienNom = cheminDeBase + "serveur/" + req.body.console+ '/' + req.body.ancienNom; //+ '.zip';
+    let cheminNouveauNom = cheminDeBase + "serveur/" + req.body.console+ '/' + req.body.nouveauNom; //+ '.zip';
+    console.log('cheminAncienNom: ', cheminAncienNom);
+    console.log('cheminNouveauNom: ', cheminNouveauNom);
+    fs.rename(cheminAncienNom, cheminNouveauNom, function (err) {
+        if (err) throw err
+        res.sendStatus(200);
+    });
+});
 
-}
+app.post('/uploadFile', upload.array('file'), function (req, res) {
+    console.log("received " + req.files.length + " files"); // form files
+    for (var i = 0; i < req.files.length; i++) {
+        console.log("### " + String(req.files[i].path));
+        var oldPath = '' + req.files[i].path;
+        var newPath = path.resolve(cheminDeBase + req.body.console, (req.files[i].path).split('/')[1]);
+        fs.rename(oldPath, newPath, function (err) {
+            if (err) throw err
+        });
+    }
+    console.log('Fichiers placés dans le bon dossier!')
+    res.send(JSON.stringify(200));
+});
 
 app.listen(PORT, function () {
     console.log('Le serveur Node écoute sur le port: ', PORT);
