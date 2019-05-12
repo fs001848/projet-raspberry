@@ -62,7 +62,6 @@ app.post('/uploadFile', upload.array('file'), function (req, res) {
     res.send(JSON.stringify(200));
 });
 
-
 app.get('/listeConsoles', function (req, res) {
     let consoles = fs.readdirSync(cheminDeBase);
     res.send(consoles);
@@ -199,6 +198,11 @@ app.put('/modifierNomJeu', function(req, res) {
     });
 });
 
+/**
+Pour lancer Skyscraper, effectuer une requete POST
+avec un body contenant le type de console de jeu
+Exemple: {"console": "amiga"}
+*/
 app.post('/lancerSkyscraper', function(req, res) {
     commandLine = 'yes Y |./runSkyscraper.sh ' + req.body.console;
     //console.log('commandLine: ', commandLine);
