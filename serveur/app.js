@@ -3,6 +3,8 @@ var multer = require("multer");
 const serveIndex = require('serve-index');
 const formidable = require('formidable');
 const fs = require('fs');
+var sys = require('util')
+var exec = require('child_process').exec;
 const spawn = require('child_process').spawn;
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -197,18 +199,17 @@ app.put('/modifierNomJeu', function(req, res) {
     });
 });
 
-app.post('/uploadFile', upload.array('file'), function (req, res) {
-    console.log("received " + req.files.length + " files"); // form files
-    for (var i = 0; i < req.files.length; i++) {
-        console.log("### " + String(req.files[i].path));
-        var oldPath = '' + req.files[i].path;
-        var newPath = path.resolve(cheminDeBase + req.body.console, (req.files[i].path).split('/')[1]);
-        fs.rename(oldPath, newPath, function (err) {
-            if (err) throw err
-        });
-    }
-    console.log('Fichiers placés dans le bon dossier!')
-    res.send(JSON.stringify(200));
+app.post('/lancerSkyscraper', function(req, res) {
+    commandLine = 'yes Y |./runSkyscraper.sh ' + req.body.console;
+    //console.log('commandLine: ', commandLine);
+    const skyscraper = exec(commandLine, function(err, stdout, stderr) {
+        if (err) {
+            // should have err.code here?  
+        }
+    console.log('This is a test');
+        console.log(stdout);
+    res.sendStatus(200);
+    });
 });
 
 app.listen(PORT, function () {
