@@ -1,21 +1,33 @@
 <template>
-    <div id="ajoutRom">
-    <v-form
-            @submit="envoieFormEtFichiers">
-        <!-- <label>Nom:<input type="text" name="nom"></label>
-        <br> -->
-        <label>Type console:<input type="text" name="console"></label>
-        <br>
+    <div id="ajoutRom" >
+        <v-card
+        hover=true>
 
-        <label>Sélectionnez un ou plusieurs fichiers images :
-            <input id="file" type="file" multiple />
-        </label>
-        <br>
-        <v-btn
-                type="submit"
-                value="Submit"
-        >Submit</v-btn>
-    </v-form>
+            <v-form
+                    @submit="envoieFormEtFichiers">
+
+                <v-card-title primary-title>
+                    <div>
+                        <div class="headline">Choisissez la ROM à ajouter</div>
+                    </div>
+                </v-card-title>
+
+
+             <label>Choix console : <input type="text" name="console"></label>
+                <br>
+
+                <label>Sélectionnez un ou plusieurs fichiers :
+                    <input id="file" type="file" multiple />
+                </label>
+                <br>
+                <v-btn
+                        type="submit"
+                        value="Submit"
+                >Envoi</v-btn>
+            </v-form>
+
+        </v-card>
+
     </div>
 
 </template>
@@ -99,9 +111,9 @@
 <style>
 
     div#ajoutRom{
-        margin-top: 100px;
-        align-items: center;
-        align-content: center;
+        width: 50%;
+        margin: 0 auto;
+        padding-top: 100px;
 
     }
 
