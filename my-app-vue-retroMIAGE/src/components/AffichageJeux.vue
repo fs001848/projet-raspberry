@@ -31,12 +31,26 @@
             </v-card>
         </v-dialog>
 
+        <v-card-title>
+
+            <v-spacer></v-spacer>
+            <v-text-field
+                    v-model="search"
+                    append-icon="search"
+                    label="Recherche"
+                    single-line
+                    hide-details
+                    max-width="100px"
+            ></v-text-field>
+        </v-card-title>
+
 
         <v-data-table
                 :headers="headers"
                 :items="listejeux"
                 :expand="expand"
                 item-key="name"
+                :search="search"
         >
             <template v-slot:items="props" >
                 <tr @click="props.expanded = !props.expanded">
@@ -129,6 +143,15 @@
 
             save: function () {
 
+                fetch("http://localhost:3000/modifierNomJeu", {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify({console: this.listejeux[this.indexJeu].console, ancienNom: this.listejeux[this.indexJeu].name, nouveauNom: this.jeuChoisi.name})
+                })
+                    .then(res => res.text()) // OR res.json()
+                    .then(res => console.log(res))
+
+                console.log("nom jeu modifié !!")
                 Object.assign(this.listejeux[this.indexJeu], this.jeuChoisi)
 
                 this.cancel()
