@@ -1,0 +1,49 @@
+---
+- hosts : raspberry
+  become: no
+  tasks: 
+
+  - name: Install the gpg key for nodejs LTS
+    apt_key:
+      url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+      state: present
+    become: true
+
+  - name: Install the nodejs LTS repos
+    apt_repository:
+      repo: "deb https://deb.nodesource.com/node_10.x stretch main"
+      state: present
+      update_cache: yes
+    become: true
+
+  - name: Install the nodejs
+    apt:
+      name: nodejs
+      state: present
+
+  - name: Creates directory
+    file:
+      path: /home/pi/Test
+      state: directory
+
+  - name: Cloner le repo git
+    git:
+      repo: https://github.com/fs001848/projet-raspberry.git
+      version: master
+      dest: /home/pi/Test
+      accept_hostkey: yes
+    become: no
+
+  - name: Install packages based on package.json.
+    npm:
+      path: /home/pi/Test/serveur
+      state: present
+
+  - name: "Install forever (to run Node.js app)."
+    npm: name=forever global=yes state=present
+    become: true
+
+  - name: "Start example Node.js app."
+    command: forever start /home/pi/Test/serveur/app.js
+    #when: "forever_list.stdout.find('/home/pi/Test/serveur/app.js') == -1"
+    become: true
