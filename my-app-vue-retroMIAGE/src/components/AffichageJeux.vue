@@ -31,12 +31,26 @@
             </v-card>
         </v-dialog>
 
+        <v-card-title>
+
+            <v-spacer></v-spacer>
+            <v-text-field
+                    v-model="search"
+                    append-icon="search"
+                    label="Recherche"
+                    single-line
+                    hide-details
+                    max-width="100px"
+            ></v-text-field>
+        </v-card-title>
+
 
         <v-data-table
                 :headers="headers"
                 :items="listejeux"
                 :expand="expand"
                 item-key="name"
+                :search="search"
         >
             <template v-slot:items="props" >
                 <tr @click="props.expanded = !props.expanded">
