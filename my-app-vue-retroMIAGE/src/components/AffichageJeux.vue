@@ -129,6 +129,15 @@
 
             save: function () {
 
+                fetch("http://localhost:3000/modifierNomJeu", {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify({console: this.listejeux[this.indexJeu].console, ancienNom: this.listejeux[this.indexJeu].name, nouveauNom: this.jeuChoisi.name})
+                })
+                    .then(res => res.text()) // OR res.json()
+                    .then(res => console.log(res))
+
+                console.log("nom jeu modifié !!")
                 Object.assign(this.listejeux[this.indexJeu], this.jeuChoisi)
 
                 this.cancel()
