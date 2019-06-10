@@ -32,3 +32,15 @@ npm run build
   - "IP_raspberry:3000/upload" pour pouvoir charger un fichier qui sera placé pour le moment dans le dossier "uploads"
   
 - PS: Dans la index.html, il faut modifié l'IP du raspberry qui utilisé dans la requête qui permet de récupérer la liste des dossiers de jeux du dossier "roms"
+
+
+******************************
+
+## ANSIBLE: Lancement automatique du serveur
+
+- Installer ansible
+- Installer sshpass pour pouvoir utiliser un utilisateur et un mot de passe lors de la connexion ssh
+- Modifier l'adresse IP dans le fichier hosts du dossier "ansible"
+- Lancement de l'installation:
+	- Se placer dans le dossier "ansible"
+	- Lancer la commande: ansible-playbook runServeur.yml -i hosts
