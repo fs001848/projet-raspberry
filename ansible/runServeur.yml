@@ -1,8 +1,10 @@
 ---
 - hosts : raspberry
   become: no
-  tasks: 
+  vars:
+    cheminProjetRetrogaming: /home/pi/projetRetrogaming
 
+  tasks: 
   - name: Install the gpg key for nodejs LTS
     apt_key:
       url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
@@ -14,36 +16,51 @@
       repo: "deb https://deb.nodesource.com/node_10.x stretch main"
       state: present
       update_cache: yes
-    become: true
+    #become: true
 
-  - name: Install the nodejs
+  - name: Installer nodejs
     apt:
       name: nodejs
       state: present
 
-  - name: Creates directory
-    file:
-      path: /home/pi/Test
-      state: directory
+  - name: Supprimer dossier git
+    file: 
+      path: "{{cheminProjetRetrogaming}}"
+      state: absent
 
-  - name: Cloner le repo git
+  - name: Cloner projet git
     git:
       repo: https://github.com/fs001848/projet-raspberry.git
       version: master
-      dest: /home/pi/Test
+      dest: "{{cheminProjetRetrogaming}}"
       accept_hostkey: yes
-    become: no
+    #become: no
 
-  - name: Install packages based on package.json.
+  - name: Mettre runSkyscraper.sh en mode executable
+    file:
+      path: "{{cheminProjetRetrogaming}}/serveur/runSkyscraper.sh"
+      mode: '0777'
+    become: true
+
+  - name: Installer les modules du package.json.
     npm:
-      path: /home/pi/Test/serveur
+      path: "{{cheminProjetRetrogaming}}/serveur"
       state: present
 
   - name: "Install forever (to run Node.js app)."
     npm: name=forever global=yes state=present
-    become: true
 
-  - name: "Start example Node.js app."
-    command: forever start /home/pi/Test/serveur/app.js
-    #when: "forever_list.stdout.find('/home/pi/Test/serveur/app.js') == -1"
-    become: true
+  - name: "Check list of Node.js apps running."
+    command: forever list
+    register: forever_list
+    changed_when: false
+
+  - name: "Start retropie Node.js app."
+    command: forever start /home/pi/projetRetrogaming/serveur/app.js
+    when: "forever_list.stdout.find('/home/pi/projetRetrogaming/serveur/app.js') == -1"
+
+  - name: Compléter le crontab
+    cron:
+      name: "Lancer le serveur au démarrage"
+      special_time: reboot
+      job: "/usr/local/bin/forever start /home/pi/projetRetrogaming/serveur/app.js"
