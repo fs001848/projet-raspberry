@@ -208,11 +208,24 @@ app.post('/lancerSkyscraper', function(req, res) {
         if (err) {
             // should have err.code here?  
         }
-    console.log('This is a test');
         console.log(stdout);
     res.sendStatus(200);
     });
 });
+
+/**
+Pour redémarrer le raspberry une fois toutes les modifications effectuées
+*/
+app.post('/rebootRaspberry', function(req, res) {
+    const skyscraper = exec('sudo reboot', function(err, stdout, stderr) {
+        if (err) {
+            // should have err.code here?  
+        }
+        console.log(stdout);
+        res.sendStatus(200);
+    });
+});
+
 
 app.listen(PORT, function () {
     console.log('Le serveur Node écoute sur le port: ', PORT);
