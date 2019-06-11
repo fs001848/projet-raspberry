@@ -45,7 +45,5 @@
         margin-right: 200px;
 
     }
-    img#gif{
-        margin-left: 40%;
-    }
+
 </style>
