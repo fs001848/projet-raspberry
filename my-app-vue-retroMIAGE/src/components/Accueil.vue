@@ -1,13 +1,9 @@
 <template>
     <div id="contenu">
-        <v-img
-                :src="require('../assets/logo.svg')"
-                class="my-3"
-                contain
-                height="200"
-        ></v-img>
+        <img id="gif"
+                :src="require('../assets/Rasp_turn_around.gif')" />
+
         <v-card-text>
-            <p class="text-md-center">Ici texte d'accueil</p>
 
             <v-text-field
             label="IP Raspberry">
@@ -49,4 +45,5 @@
         margin-right: 200px;
 
     }
+
 </style>
