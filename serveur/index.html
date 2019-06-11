@@ -31,8 +31,7 @@
   </div>
 
   <form onsubmit="envoieFormEtFichiers(event);">
-    <!-- <label>Nom:<input type="text" name="nom"></label>
-    <br> -->
+    <h1>Charger un nouveau fichier:</h1>
     <label>Type console:<input type="text" name="console"></label>
     <br>
     <label>Sélectionnez un ou plusieurs fichiers images :
@@ -41,6 +40,14 @@
     <br>
     <button>Envoyer</button>
   </form>
+
+  <h1>Lancer Skyscraper</h1>
+  <button onclick="lancerSkyscraper()">lancer</button>
+  <p id="resultatLancement"></p>
+
+  <h1>Redémarrer Raspberry</h1>
+  <button onclick="redemarrerRaspberry()">Redémarrer</button>
+  <p id="resultatRedemarrage"></p>
 
   <script>
     function envoieFormEtFichiers(event) {
@@ -66,25 +73,58 @@
 
         // on envoie le formulaire par POST
         fetch('uploadFile', {
-                method: 'POST',
-                body: data
-            })
-            .then((responseJSON) => {
-                responseJSON.json()
-                    .then((resJS) => {
-                        // Maintenant resJS est un vrai objet JavaScript
-                        console.log("réponse : " + resJS.msg);
+          method: 'POST',
+          body: data
+        })
+        .then((responseJSON) => {
+          responseJSON.json()
+            .then((resJS) => {
+              // Maintenant resJS est un vrai objet JavaScript
+              console.log("réponse : " + resJS.msg);
 
-                        // on remet les champs du form à vide et on affiche
-                        // les images uploadées...
-                        form.reset()
-                        //showUploadedImages();
-                    });
-            })
-            .catch(function (err) {
-                console.log(err);
+              // on remet les champs du form à vide et on affiche
+              // les images uploadées...
+              form.reset()
+              //showUploadedImages();
             });
+        })
+        .catch(function (err) {
+            console.log(err);
+        });
+    }
 
+    function redemarrerRaspberry(){
+      fetch('rebootRaspberry', {
+        method: 'POST',
+        body: ''
+      })
+      .then((responseJSON) => {
+        responseJSON.json()
+          .then((res) => {
+            // Maintenant resJS est un vrai objet JavaScript
+            console.log("Réponse redémarrage: " + res);
+          });
+      })
+      .catch(function (err) {
+          console.log('Erreur redémarrage: ', err);
+      });
+    }
+
+    function lancerSkyscraper(){
+      fetch('lancerSkyscraper', {
+        method: 'POST',
+        body: ''
+      })
+      .then((responseJSON) => {
+        responseJSON.json()
+          .then((res) => {
+            // Maintenant resJS est un vrai objet JavaScript
+            console.log("Réponse lancement Skyscraper: " + res);
+          });
+      })
+      .catch(function (err) {
+          console.log('Erreur lancement Skyscraper: ', err);
+      }); 
     }
   </script>
 </body>
