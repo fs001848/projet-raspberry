@@ -202,7 +202,7 @@ avec un body contenant le type de console de jeu
 Exemple: {"console": "amiga"}
 */
 app.post('/lancerSkyscraper', function(req, res) {
-    commandLine = 'yes Y | ./home/pi/projetRetrogaming/serveur/runSkyscraper.sh ' + req.body.console;
+    commandLine = 'yes Y | ./runSkyscraper.sh ' + req.body.console;
     //console.log('commandLine: ', commandLine);
     let skyscraper = exec(commandLine, function(err, stdout, stderr) {
         if (err) {
